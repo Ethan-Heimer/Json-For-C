@@ -19,7 +19,7 @@ option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 set_target_properties(${NAME} PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(${NAME} PROPERTIES PUBLIC_HEADER ${CMAKE_SOURCE_DIR}/project/include/json/json.h)
 
-target_include_directories(${NAME} PRIVATE
+target_include_directories(${NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/project/include
 )
 
