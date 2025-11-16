@@ -22,7 +22,7 @@ set_target_properties(${NAME} PROPERTIES PUBLIC_HEADER ${CMAKE_SOURCE_DIR}/proje
 target_include_directories(${NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/project/include
 )
-
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/project/include/ DESTINATION include)
 install(TARGETS ${NAME}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
