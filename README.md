@@ -29,7 +29,7 @@ parsing and syntax Errors.
 JInit();
 ```
 
-Likewise, before the program terminates, `JEnd()` Must be called to free the AST 
+Likewise, before the program terminates, `JEnd` Must be called to free the AST 
 and other memory the library used in the background.
 
 ```
