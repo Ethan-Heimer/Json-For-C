@@ -2,6 +2,8 @@
 #define JSON_TREE_BUILD_H
 
 #include "json/json.h"
+#include "json/jsonTree.h"
+#include "json/jsonStack.h"
 
 typedef enum JTreeBuildState{
     UNDEFINED,

@@ -261,6 +261,10 @@ Json* JCreateTree(Queue* tokenQueue){
     return root;
 }
 
+void JDelete(Json** json){
+    DeleteJson(json);
+}
+
 Json* JGetValue(Json* root, const char* key, JsonValue** value){
     if(root == NULL){
         return NULL;

@@ -6,12 +6,17 @@
 #include "utils/ast.h"
 #include "utils/token.h"
 
-#include "jsonTree.h"
-#include "jsonStack.h"
-
 extern ASTTree* syntaxTree;
 
 typedef String JsonValue;
+
+typedef struct Json{
+    String* key;
+    String* data;
+
+    struct Json** children;
+    int childLength;
+} Json;
 
 //this initializes the syntax token map, and abstract syntax trees
 void JInit();
@@ -26,6 +31,9 @@ bool JFileTokenize(String* normalizedFile, Queue* tokenQueue);
 
 //create JSON Tree
 Json* JCreateTree(Queue* tokenQueue);
+
+//delete Json tree
+void JDelete(Json**);
 
 //delete syntax tree and other gloabl memory
 void JEnd();

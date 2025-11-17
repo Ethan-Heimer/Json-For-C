@@ -6,7 +6,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(${NAME} VERSION 1.0.0 LANGUAGES C)
 
 # Grab All  Source Files
-file(GLOB_RECURSE SOURCE_FILES "${CMAKE_SOURCE_DIR}/project/*.c")
+file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/project/*.c")
 
 message("Message ${SOURCE_FILES}")
 
@@ -22,8 +22,11 @@ set_target_properties(${NAME} PROPERTIES PUBLIC_HEADER ${CMAKE_SOURCE_DIR}/proje
 target_include_directories(${NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/project/include
 )
+
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/project/include/ DESTINATION include)
 install(TARGETS ${NAME}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/project/include/" DESTINATION "${CMAKE_BINARY_DIR}/include/")
 

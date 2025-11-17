@@ -1,14 +1,8 @@
 #ifndef JSON_STACK_H
 #define JSON_STACK_H
 
-#ifndef JSON_H
-    typedef enum JsonTreeType{
-        ARRAY,
-        OBJECT
-    } JsonTreeType;
-
-    struct Json;
-#endif
+#include "json/json.h"
+#include "json/jsonTree.h"
 
 struct JsonStack;
 struct JsonStackNode;
