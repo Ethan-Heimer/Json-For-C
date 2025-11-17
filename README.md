@@ -68,4 +68,17 @@ Json* object = JParse("example.json");
 `JParse` will return a JSON object to be interpreted. This JSON object represents the 
 root of the file.
 
+If the object returned is NULL, then an error occured while parsing.
+
+#### Key Value Pairs
+To grab a value from a JSON object, `JGetValue(JSON object, key, value)` is called.
+
+```
+JsonValue* value = NULL;
+JGetValue(json, "Hello", &JsonValue);
+
+if(value)
+    printf("Value: %s\n", value->string);
+```
+
 
