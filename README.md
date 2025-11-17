@@ -36,7 +36,7 @@ and other memory the library used in the background.
 JEnd();
 ```
 
-### Use
+### Parsing
 
 To show off the API, the following, `example.json` will be used: 
 ```example.json
@@ -58,7 +58,6 @@ To show off the API, the following, `example.json` will be used:
     ]
 }   
 ```
-#### Parsing
 After initialization, parsing can begin. To parse a file, call `JParse(file name)`
 
 ```
@@ -70,7 +69,7 @@ root of the file.
 
 If the object returned is NULL, then an error occured while parsing.
 
-#### Key Value Pairs
+### Getting Key Value Pairs
 To grab a value from a JSON object, `JGetValue(JSON object, key, value)` is called.
 
 ```
@@ -80,5 +79,9 @@ JGetValue(json, "Hello", &JsonValue);
 if(value)
     printf("Value: %s\n", value->string);
 ```
+
+After calling `JGetValue`, If the key is found and the pair is a simple value, the value
+will be stored in `JsonValue* value`. `JsonValue->string` is the text, number, or bool value 
+found at the key. 
 
 
