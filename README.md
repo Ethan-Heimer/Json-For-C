@@ -36,3 +36,34 @@ and other memory the library used in the background.
 JEnd();
 ```
 
+### Use
+
+To show off the API, the following, `example.json` will be used: 
+```example.json
+{
+    "Hello" : "World",
+
+    "Nested-Object" : {
+        "One", 1,
+        "Two" : 2, 
+        "Three" : 3
+    },
+
+    "Array" : [
+        10,
+        "Ten",
+        {
+            "Ten" : 10
+        }
+    ]
+}   
+```
+
+After initialization, parsing can begin. To parse a file, call `JParse(file name)`
+
+```
+Json* object = JParse("example.json");
+```
+
+JParse will return the contents of the input JSON file with a JSON object representing
+the root of the file
