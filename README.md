@@ -61,7 +61,7 @@ To show off the API, the following, `example.json` will be used:
 After initialization, parsing can begin. To parse a file, call `JParse(file name)`
 
 ```
-Json* object = JParse("example.json");
+Json* root = JParse("example.json");
 ```
 
 `JParse` will return a JSON object to be interpreted. This JSON object represents the 
@@ -82,6 +82,8 @@ if(value)
 
 After calling `JGetValue`, If the key is found and the pair is a simple value, the value
 will be stored in `JsonValue* value`. `JsonValue->string` is the text, number, or bool value 
-found at the key. 
+found at the key.
+
+If the key is not found, the value stays `NULL`.
 
 
