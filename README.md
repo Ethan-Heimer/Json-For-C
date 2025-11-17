@@ -19,5 +19,20 @@ gcc -o test -I./ -L./ main.c -libjson
 ```
 
 ## API
+The API for this library is very simple. 
+### Initialization
 
+Before Parsing, `JInit` Must be called. This initializes the JSON Abstract Syntax Tree for 
+parsing and syntax Errors.
+
+```
+JInit();
+```
+
+Likewise, before the program terminates, `JEnd()` Must be called to free the AST 
+and other memory the library used in the background.
+
+```
+JEnd();
+```
 
