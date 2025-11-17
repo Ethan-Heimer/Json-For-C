@@ -58,12 +58,14 @@ To show off the API, the following, `example.json` will be used:
     ]
 }   
 ```
-
+#### Parsing
 After initialization, parsing can begin. To parse a file, call `JParse(file name)`
 
 ```
 Json* object = JParse("example.json");
 ```
 
-JParse will return the contents of the input JSON file with a JSON object representing
-the root of the file
+`JParse` will return a JSON object to be interpreted. This JSON object represents the 
+root of the file.
+
+
