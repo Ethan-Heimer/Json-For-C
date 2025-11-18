@@ -18,6 +18,8 @@ bool ValidateToken(ASTNode** currentASTNode, char token){
 void AddNumericCharactersToNode(ASTNode* parentNode, ASTNode** childNodes, int childCount){
     ASTListNode* newNodeList = NULL;
 
+    ASTNode* decimalPoint = CreateASTNode(NUMBER_DATA, '.');
+
     //add numeric values
     for(int i = 0; i < 10; i++){ 
          ASTNode* node = CreateASTNode(NUMBER_DATA, '0'+i);
@@ -41,6 +43,10 @@ void AddNumericCharactersToNode(ASTNode* parentNode, ASTNode** childNodes, int c
         currentNode = currentNode->next;
     }
 
+    //add decimal node to number nodes
+    for(int i = 0; i < length; i++)
+        ASTNodeAddChild(decimalPoint, parentNode->Children[i]);
+        
     DeleteASTList(&newNodeList); 
 }
 
