@@ -1,6 +1,10 @@
 # JSON For C
 
-JSON For C is a very simple JSON parser for the C Programming Language.
+JSON For C is a very __simple__ JSON parser for the C Programming Language. Parse 
+the file, get what you need, and get out.
+
+__This Library is NOT for writting or serializing JSON files.__
+Just reading!
 
 ## Build
 
