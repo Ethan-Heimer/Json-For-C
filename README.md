@@ -75,7 +75,7 @@ To free the resulting JSON Object when its no longer needed, call `JDelete(Json*
 JDelete(&root);
 ```
 
-** REMEMBER: Delete The Root JSON Object! The Root Object Is The One Returned By JParse! **
+__REMEMBER: Delete The Root JSON Object! The Root Object Is The One Returned By JParse()!__
 
 ### Getting Key Value Pairs
 To grab a value from a JSON object, `JGetValue(JSON object, key, value)` is called.
@@ -147,3 +147,5 @@ The result:
 Output 0: 10
 Output 1: Ten
 ```
+
+__The element at index 2 is an object, so its not stored in value, but returned by JGetValue()__
