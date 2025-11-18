@@ -230,8 +230,6 @@ Json* JCreateTree(Queue* tokenQueue){
         JTreeBuildState treeState = GetTreeState(token);
         Json* newNode = NULL;
 
-        printf("%s\n", token->data->string);
-
         switch(treeState){
             case SCOPE_IN:  
                 ScopeJTreeIn(token, &currentJsonNode, stack, &treeType, &arrayIndex);

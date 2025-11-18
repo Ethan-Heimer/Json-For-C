@@ -13,7 +13,9 @@ mkdir build && cd build
 cmake ..
 make
 ```
-The most basic example to link against this library is as follows:
+The most basic example to link against this library is as follows, where the
+project is being built within the build directory generated.
+
 ```
 gcc -o test -I./ -L./ main.c -libjson
 ```
@@ -60,7 +62,7 @@ To show off the API, the following, `example.json` will be used:
 ```
 After initialization, parsing can begin. To parse a file, call `JParse(file name)`
 
-```
+```example.c
 Json* root = JParse("example.json");
 ```
 
@@ -71,7 +73,7 @@ If the object returned is NULL, then an error occured while parsing.
 
 To free the resulting JSON Object when its no longer needed, call `JDelete(Json**)`
 
-```
+```example.c
 JDelete(&root);
 ```
 
@@ -80,7 +82,7 @@ __REMEMBER: Delete The Root JSON Object! The Root Object Is The One Returned By 
 ### Getting Key Value Pairs
 To grab a value from a JSON object, `JGetValue(JSON object, key, value)` is called.
 
-```
+```example.c
 JsonValue* value = NULL;
 JGetValue(root, "Hello", &JsonValue);
 
@@ -104,7 +106,7 @@ If the key is not found, the value stays `NULL`.
 
 `JGetValue` will return the nested JSON object if the key is paired with one.
 
-```
+```example.c
 JsonValue* value = NULL;
 Json* nested = JGetValue(root, "Nested-Object", value);
 
@@ -124,7 +126,7 @@ Output: 2
 
 `JGetValue` Can also be used to get array values. The Key is the array index.
 
-```
+```example.c
 JsonValue* value = NULL;
 Json* array = JGetValue(root, "Array", &value)
 
@@ -153,7 +155,7 @@ __The element at index 2 is an object, so its not stored in value, but returned 
 Looping through an array is simple. JSON Objects store the type of object it is (VALUE, OBJECT, ARRAY),
 and its number if children. Using that information, looping throught all elements can be achieved like so:
 
-```
+```example.c
 int children = array->childCount;
 for(int i = 0; i < children; i++){
     char buffer[20];

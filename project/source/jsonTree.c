@@ -20,16 +20,6 @@ void DeleteJson(Json** node){
     if(*node == NULL)
         return;
 
-    if((*node)->type == ARRAY)
-        printf("ARRAY\n");
-    else if((*node)->type == VALUE)
-        printf("VALUE\n");
-    else if((*node)->type == OBJECT)
-        printf("OBJECT\n");
-
-    if((*node)->data)
-        printf("Data: %s\n", (*node)->data->string);
-
     if((*node)->key != NULL)
         DeleteString(&(*node)->key);
 
