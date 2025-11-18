@@ -69,15 +69,29 @@ root of the file.
 
 If the object returned is NULL, then an error occured while parsing.
 
+To free the resulting JSON Object when its no longer needed, call `JDelete(Json**)`
+
+```
+JDelete(&root);
+```
+
+*** REMEMBER: Delete The Root JSON Object! The Root Object Is The One Returned By JParse! ***
+
 ### Getting Key Value Pairs
 To grab a value from a JSON object, `JGetValue(JSON object, key, value)` is called.
 
 ```
 JsonValue* value = NULL;
-JGetValue(json, "Hello", &JsonValue);
+JGetValue(root, "Hello", &JsonValue);
 
 if(value)
-    printf("Value: %s\n", value->string);
+    printf("Output: %s\n", value->string);
+```
+
+The result: 
+
+```
+Output: World
 ```
 
 After calling `JGetValue`, If the key is found and the pair is a simple value, the value
@@ -86,4 +100,50 @@ found at the key.
 
 If the key is not found, the value stays `NULL`.
 
+### Getting Nested Objects
 
+`JGetValue` will return the nested JSON object if the key is paired with one.
+
+```
+JsonValue* value = NULL;
+Json* nested = JGetValue(root, "Nested-Object", value);
+
+if(nested){
+    JGetValue(nested, "Two", value);
+    if(value)
+        printf("Output: %s\n", value->string);
+}
+```
+
+The Result:
+```
+Output: 2
+```
+
+### Getting Arrays
+
+`JGetValue` Can also be used to get array values. The Key is the array index.
+
+```
+JsonValue* value = NULL;
+Json* array = JGetValue(root, "Array", &value)
+
+JGetValue(root, "0", value);
+if(value)
+    printf("Output 0: %s\n", value->string);
+
+JGetValue(root, "1", value);
+if(value)
+    printf("Output 1: %s\n", value->string);
+
+JGetValue(root, "2", value);
+if(value)
+    printf("Output 2: %s\n", value->string);
+```
+
+The result:
+
+```
+Output 0: 10
+Output 1: Ten
+```
