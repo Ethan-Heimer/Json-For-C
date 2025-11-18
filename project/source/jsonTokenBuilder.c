@@ -44,8 +44,10 @@ void AddNumericCharactersToNode(ASTNode* parentNode, ASTNode** childNodes, int c
     }
 
     //add decimal node to number nodes
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; i++){
+        ASTNodeAddChild(parentNode->Children[i], decimalPoint);
         ASTNodeAddChild(decimalPoint, parentNode->Children[i]);
+    }
         
     DeleteASTList(&newNodeList); 
 }
