@@ -269,21 +269,23 @@ Json* JGetValue(Json* root, const char* key, JsonValue** value){
     if(root == NULL){
         return NULL;
     }
+
     int length = root->childLength;
 
     for(int i = 0; i < length; i++){
         Json* child = root->children[i];
 
         if(SameStringValue(child->key, key)){
-            if(child->data == NULL)
+            if(child->data == NULL){
+                *value = NULL;
                 return child;
+            }
             else{
                 if(value != NULL){
                     *value = child->data; 
+                    return NULL;
                 }
             }
-
-            break;
         }
     }
 
