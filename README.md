@@ -149,3 +149,25 @@ Output 1: Ten
 ```
 
 __The element at index 2 is an object, so its not stored in value, but returned by JGetValue()__
+
+Looping through an array is simple. JSON Objects store the type of object it is (VALUE, OBJECT, ARRAY),
+and its number if children. Using that information, looping throught all elements can be achieved like so:
+
+```
+int children = array->childCount;
+for(int i = 0; i < children; i++){
+    char buffer[20];
+    sprintf(buffer, "%s", i);
+
+    JGetValue(array, buffer, &value);
+    if(value)
+        printf("Value at %d is %s\n", i, value->string);
+}
+```
+
+The Result: 
+
+```
+Value at 0 is 10
+Value at 1 is Ten
+```

@@ -21,7 +21,7 @@ void UpdateTreeType(const Token* currentToken, JsonTreeType* state, int* arrayIn
 void ScopeJTreeIn(Token* token, Json** currentNode, JsonStack* scopeStack, JsonTreeType* treeType, int* arrayIndex);
 void ScopeJTreeOut(JsonStack* stack, JsonTreeType* treeType, int* arrayIndex);
 
-void AddChildNode(JsonStack* stack, Json** currentNode, JsonTreeType treeType, int* arrayIndex);
+void AddChildNode(JsonType type, JsonStack* stack, Json** currentNode, JsonTreeType treeType, int* arrayIndex);
 
 void FillJsonField(const Token* token, String** field);
 void FillJsonData(const Token* token, Json* currentNode, JsonTreeType treeType);

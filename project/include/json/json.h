@@ -10,12 +10,20 @@ extern ASTTree* syntaxTree;
 
 typedef String JsonValue;
 
+typedef enum JsonType{
+    VALUE = 0,
+    OBJECT,
+    ARRAY
+} JsonType;
+
 typedef struct Json{
     String* key;
     String* data;
 
     struct Json** children;
     int childLength;
+
+    JsonType type;
 } Json;
 
 //this initializes the syntax token map, and abstract syntax trees

@@ -219,7 +219,7 @@ Json* JCreateTree(Queue* tokenQueue){
     JsonStack* stack = NewJsonStack();
 
     Json* currentJsonNode = root;
-    JsonTreeType treeType = OBJECT;
+    JsonTreeType treeType = T_OBJECT;
 
     int arrayIndex = 0;
 
@@ -229,6 +229,8 @@ Json* JCreateTree(Queue* tokenQueue){
 
         JTreeBuildState treeState = GetTreeState(token);
         Json* newNode = NULL;
+
+        printf("%s\n", token->data->string);
 
         switch(treeState){
             case SCOPE_IN:  
@@ -240,7 +242,7 @@ Json* JCreateTree(Queue* tokenQueue){
                 break;
 
             case INLINE_NEW:
-                AddChildNode(stack, &currentJsonNode, treeType, &arrayIndex);
+                AddChildNode(VALUE, stack, &currentJsonNode, treeType, &arrayIndex);
                 break;
 
             case DATA_FILL:
@@ -248,7 +250,7 @@ Json* JCreateTree(Queue* tokenQueue){
                 break;
 
             case UNDEFINED:
-                printf("Invalid Token %c, Cannot finish parsing", token->tokenType);
+                printf("Invalid Token %c, Cannot finish parsing\n", token->tokenType);
                 break;
         }  
 
@@ -277,11 +279,12 @@ Json* JGetValue(Json* root, const char* key, JsonValue** value){
 
         if(SameStringValue(child->key, key)){
             if(child->data == NULL){
-                *value = NULL;
+                if(value)
+                    *value = NULL;
                 return child;
             }
             else{
-                if(value != NULL){
+                if(value){
                     *value = child->data; 
                     return NULL;
                 }

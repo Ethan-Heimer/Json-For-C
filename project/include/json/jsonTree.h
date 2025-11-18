@@ -5,8 +5,8 @@
 #include "json/json.h"
 
 typedef enum JsonTreeType{
-    ARRAY,
-    OBJECT
+    T_ARRAY,
+    T_OBJECT
 } JsonTreeType;
 
 Json* NewJson();
