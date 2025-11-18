@@ -46,7 +46,7 @@ To show off the API, the following, `example.json` will be used:
     "Hello" : "World",
 
     "Nested-Object" : {
-        "One", 1,
+        "One": 1,
         "Two" : 2, 
         "Three" : 3
     },
@@ -69,7 +69,8 @@ Json* root = JParse("example.json");
 `JParse` will return a JSON object to be interpreted. This JSON object represents the 
 root of the file.
 
-If the object returned is NULL, then an error occured while parsing.
+If the object returned is NULL, then an error occured while parsing. The Error
+is printed by the library.
 
 To free the resulting JSON Object when its no longer needed, call `JDelete(Json**)`
 
