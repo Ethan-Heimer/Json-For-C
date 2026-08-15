@@ -13,14 +13,17 @@ typedef enum TokenizeType{
 void AddNumericCharactersToNode(ASTNode* parentNode, ASTNode** childNodes, int childCount);
 void AddAsciiToNode(ASTNode* parentNode, ASTNode** childNodes, int childCount);
 void AddBooleanValues(ASTNode* parentNode, ASTNode** childNodes, int childCount);
+void AddNullValues(ASTNode* parentNode, ASTNode** childNodes, int childCount);
 
-void Tokenize(ASTNode* currentSyntaxNode, char currentChar, String* tokenString, Queue* queue, TokenizeType* tokenState);
-void PushToken(Queue* queue, String* dataString, TokenType type);
+void Tokenize(ASTNode* currentSyntaxNode, char currentChar, String* tokenString, Queue* queue, TokenizeType* tokenState, bool isNumberToken);
+void PushToken(Queue* queue, String* dataString, TokenType type, TokenValueType valueType);
 
 void UpdateScope(ASTNode* currentSyntaxNode, unsigned int* scope);
 
 bool ValidateToken(ASTNode** currentASTNode, char token);
 bool DiscardToken(ASTNode* currentSyntaxNode);
 bool ChangeTokenizingState(ASTNode* currentSyntaxNode, TokenizeType* currentState);
+
+TokenValueType DetermineTokenValueType(const String* tokenString);
 
 #endif

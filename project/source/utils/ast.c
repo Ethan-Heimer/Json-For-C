@@ -20,10 +20,6 @@ void DeleteASTTree(ASTTree** tree){
     if((*tree)->root == NULL)
         return;
 
-    //auxilerty stack to store all nodes in the tree to free
-    ASTNode** NodeList = NULL;
-    int NodeCount = 0;
-
     //find all nodes
     ASTListNode* list = NULL;
     GetTreesNodes((*tree)->root, &list);

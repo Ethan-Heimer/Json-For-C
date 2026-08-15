@@ -1,6 +1,7 @@
 #ifndef JSON_TREE_BUILD_H
 #define JSON_TREE_BUILD_H
 
+#include "utils/token.h"
 #include "json/json.h"
 #include "json/jsonTree.h"
 #include "json/jsonStack.h"
@@ -23,7 +24,7 @@ void ScopeJTreeOut(JsonStack* stack, JsonTreeType* treeType, int* arrayIndex);
 
 void AddChildNode(JsonType type, JsonStack* stack, Json** currentNode, JsonTreeType treeType, int* arrayIndex);
 
-void FillJsonField(const Token* token, String** field);
+void FillJsonField(const Token* token, TokenValueType* valueType, String** field);
 void FillJsonData(const Token* token, Json* currentNode, JsonTreeType treeType);
 
 #endif

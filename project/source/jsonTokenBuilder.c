@@ -3,6 +3,8 @@
 #include "utils/token.h"
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 bool ValidateToken(ASTNode** currentASTNode, char token){
         ASTNode* newNode = ASTGetChildNodeByValue(*currentASTNode, token);         
@@ -114,11 +116,28 @@ void AddBooleanValues(ASTNode* parentNode, ASTNode** childNodes, int childCount)
     for(int i = 0; i < childCount; i++){ 
         ASTNodeAddChild(E, childNodes[i]);
     }
-
 }
 
-void PushToken(Queue* queue, String* dataString, TokenType tokenType){
-    Token* token = CreateToken(dataString->string, tokenType);
+void AddNullValues(ASTNode* parentNode, ASTNode** childNodes, int childCount){
+    //null
+    ASTNode* N = CreateASTNode(TEXT_DATA, 'n');
+    ASTNode* U = CreateASTNode(TEXT_DATA, 'u');
+    ASTNode* L1 = CreateASTNode(TEXT_DATA, 'l');
+    ASTNode* L2 = CreateASTNode(TEXT_DATA, 'l');
+
+    //connect
+    ASTNodeAddChild(parentNode, N);
+    ASTNodeAddChild(N, U);
+    ASTNodeAddChild(U, L1);
+    ASTNodeAddChild(L1, L2);
+
+    for(int i = 0; i < childCount; i++){ 
+        ASTNodeAddChild(L2, childNodes[i]);
+    }
+}
+
+void PushToken(Queue* queue, String* dataString, TokenType tokenType, TokenValueType valueType){
+    Token* token = CreateToken(dataString->string, tokenType, valueType);
     Push(queue, token);
 
     ClearString(dataString);
@@ -130,24 +149,42 @@ bool DiscardToken(ASTNode* currentSyntaxNode){
     return (type == QUOTE || type == PAIR);
 }
 
-void Tokenize(ASTNode* currentSyntaxNode, char currentChar, String* tokenString, Queue* queue, TokenizeType* tokenizeState){
+void Tokenize(ASTNode* currentSyntaxNode, char currentChar, String* tokenString, Queue* queue, TokenizeType* tokenizeState, bool isNumberToken){
     bool push = ChangeTokenizingState(currentSyntaxNode, tokenizeState);
 
-    if(push) 
-        PushToken(queue, tokenString, DATA); 
+    /*
+    if(currentSyntaxNode->TokenType == NUMBER_DATA)
+        printf("NUMBER: %s %c\n", tokenString->string, currentChar);
+    if(currentSyntaxNode->TokenType == TEXT_DATA)
+        printf("TEXT: %s %c\n", tokenString->string, currentChar);
+    */
+
+    if(push){
+        //all data type tokens get 'type erased' to just DATA for the tree to understand
+        //token get assigned a secondary token type with what type the value actually is
+        //there is 100% a better way to do this, but its whatever it works
+        DetermineTokenValueType(tokenString);
+        TokenValueType valueType = DetermineTokenValueType(tokenString);
+        PushToken(queue, tokenString, DATA, valueType); 
+
+        //tokens should carry a type however so json value can tell the type its holding
+    }
 
     if(!DiscardToken(currentSyntaxNode)){
         AppendChar(tokenString, currentChar);
 
-        if(*tokenizeState == PUSH)
-            PushToken(queue, tokenString, currentSyntaxNode->TokenType); 
+        //these are tokens like {[,]} getting pushed. these tokens have token types 
+        //that help the tree build itslef like OPEN_OBJECT, CLOSE_ARRAY etc
+        if(*tokenizeState == PUSH){
+            PushToken(queue, tokenString, currentSyntaxNode->TokenType, NO_VALUE); 
+        }
     }
 }
 
 bool ChangeTokenizingState(ASTNode* currentSyntaxNode, TokenizeType* currentState){
     TokenType tokenType = currentSyntaxNode->TokenType;
 
-    if(tokenType == TEXT_DATA || tokenType == NUMBER_DATA && *currentState == PUSH){
+    if(tokenType == TEXT_DATA || (tokenType == NUMBER_DATA && *currentState == PUSH)){
         *currentState = HOLD;
         return false;
     }
@@ -171,4 +208,25 @@ void UpdateScope(ASTNode* currentSyntaxNode, unsigned int* scope){
         *scope -= 1;
         return;
     }
+}
+
+TokenValueType DetermineTokenValueType(const String *tokenString){
+    //check null and bool types
+    if(strcmp(tokenString->string, "null") == 0){
+        return NULL_VALUE;
+    }else if(strcmp(tokenString->string, "true") == 0 || strcmp(tokenString->string, "false") == 0){
+        return BOOL_VALUE;
+    }
+
+    //check int and float types
+    char* endptr = NULL;
+    strtol(tokenString->string, &endptr, 10);
+    if(*endptr == '\0')
+        return INT_VALUE;
+
+    strtod(tokenString->string, &endptr);
+    if(*endptr == '\0')
+        return FLOAT_VALUE;
+
+    return STRING_VALUE; 
 }
