@@ -29,6 +29,8 @@ void DeleteJson(Json** node){
     for(int i = 0; i < (*node)->childLength; i++)
         DeleteJson(&(*node)->children[i]);
 
+    free((*node)->children);
+    free(*node);
     *node = NULL;
 }
 
@@ -38,6 +40,9 @@ void AddJsonChild(Json* parent, Json* child){
 
     if(buffer == NULL){
         printf("Cannot add child to json");
+        free(parent->children);
+        
+        exit(-1);
     }
 
     buffer[newSize-1] = child;

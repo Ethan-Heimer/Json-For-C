@@ -14,8 +14,11 @@ typedef struct ASTNode{
 
     unsigned char AsciiValue;
 
+    //array of node pointers
     struct ASTNode** Children; 
     int ChildCount;
+
+    bool freed;
 } ASTNode;
 
 typedef struct ASTListNode{

@@ -202,6 +202,7 @@ bool JFileTokenize(String* normalizedFile, Queue* tokenQueue){
     unsigned int index = 0;     
     unsigned int scope = 0;
 
+    // memory leak
     String* currentTokenData = CreateString();
     TokenizeType tokenizeState = PUSH;
   
@@ -214,7 +215,8 @@ bool JFileTokenize(String* normalizedFile, Queue* tokenQueue){
         if(!validToken){
             printf("\nSyntax Error, Unexped Token %c at %d after %c. \n",
                 c, index+1, currentSyntaxNode->AsciiValue);
-
+            
+            DeleteString(&currentTokenData);
             return false;
         } else { 
             Tokenize(currentSyntaxNode, c, currentTokenData, tokenQueue, &tokenizeState, false);
@@ -228,9 +230,11 @@ bool JFileTokenize(String* normalizedFile, Queue* tokenQueue){
         perror("Syntax Error, Expected End of Data Not Found... Missing } or }?\n");
         printf("Scope: %d\n", scope);
 
+        DeleteString(&currentTokenData);
         return false;
     }
-
+    
+    DeleteString(&currentTokenData);
     return true;
 }
 

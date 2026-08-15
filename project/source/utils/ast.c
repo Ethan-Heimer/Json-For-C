@@ -13,6 +13,37 @@ ASTTree* CreateASTTree(){
     return tree;
 }
 
+void UntangleTree(ASTNode* node){
+    if(node == NULL || node->freed == true)
+        return;
+     
+    node->freed = true;
+    for(int i = 0; i < node->ChildCount; i++){
+        if(node->Children[i] == NULL)
+            continue;
+
+        if(node->Children[i]->freed){
+            node->Children[i] = NULL;
+        }
+        else{
+            UntangleTree(node->Children[i]);
+        }
+    }
+}
+
+void FreeTree(ASTNode* node){
+    if(node == NULL)
+        return;
+
+    for(int i = 0; i < node->ChildCount; i++){
+        FreeTree(node->Children[i]);
+    }
+
+    free(node->Children);
+    free(node);
+}
+
+// not all memory is freed it seems
 void DeleteASTTree(ASTTree** tree){
     if(*tree == NULL)
         return;
@@ -20,21 +51,13 @@ void DeleteASTTree(ASTTree** tree){
     if((*tree)->root == NULL)
         return;
 
-    //find all nodes
-    ASTListNode* list = NULL;
-    GetTreesNodes((*tree)->root, &list);
-
-    ASTListNode* currentNode = list; 
-    while(currentNode != NULL){
-        DeleteASTNode(&currentNode->node);
-        currentNode = currentNode->next;
-    }
-
-    DeleteASTList(&list);
+    UntangleTree((*tree)->root);
+    FreeTree((*tree)->root);
 
     free(*tree);
     *tree = NULL;
 }
+
 
 void GetTreesNodes(ASTNode* root, ASTListNode** list){
     //base case
@@ -63,21 +86,6 @@ ASTListNode* CreateASTListNode(ASTNode* node){
     return newListNode;
 }
 
-void DeleteASTList(ASTListNode** root){
-    ASTListNode* currentNode = *root;
-    while(currentNode != NULL){
-        ASTListNode* next = currentNode->next;
-
-        currentNode->next = NULL;
-        currentNode->node = NULL;
-
-        free(currentNode);
-
-        currentNode = next;
-    }
-
-    *root = NULL;
-}
 
 void ASTListAppendNode(ASTListNode** list, ASTListNode* appendix){
     appendix->next = *list; 
@@ -105,7 +113,8 @@ ASTNode* CreateASTNode(TokenType tokenType, unsigned char asciiValue){
 
     node->Children = NULL;
     node->ChildCount = 0;
-    
+   
+    node->freed = false;
     return node;
 }
 
@@ -117,10 +126,28 @@ void DeleteASTNode(ASTNode** node){
     *node = NULL; 
 }
 
+void DeleteASTList(ASTListNode** root){
+    ASTListNode* currentNode = *root;
+    while(currentNode != NULL){
+        ASTListNode* next = currentNode->next;
+
+        currentNode->next = NULL;
+        currentNode->node = NULL;
+
+        free(currentNode);
+
+        currentNode = next;
+    }
+
+    *root = NULL;
+}
+
+// leak starting from here
 void ASTNodeAddChild(ASTNode* parent, ASTNode* child){
     if(parent == NULL || child == NULL)
         return;
 
+    // list of children
     int length = parent->ChildCount + 1;
     ASTNode** children = (ASTNode**)realloc(parent->Children, length * sizeof(ASTNode*));
 

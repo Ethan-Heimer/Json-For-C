@@ -152,13 +152,6 @@ bool DiscardToken(ASTNode* currentSyntaxNode){
 void Tokenize(ASTNode* currentSyntaxNode, char currentChar, String* tokenString, Queue* queue, TokenizeType* tokenizeState, bool isNumberToken){
     bool push = ChangeTokenizingState(currentSyntaxNode, tokenizeState);
 
-    /*
-    if(currentSyntaxNode->TokenType == NUMBER_DATA)
-        printf("NUMBER: %s %c\n", tokenString->string, currentChar);
-    if(currentSyntaxNode->TokenType == TEXT_DATA)
-        printf("TEXT: %s %c\n", tokenString->string, currentChar);
-    */
-
     if(push){
         //all data type tokens get 'type erased' to just DATA for the tree to understand
         //token get assigned a secondary token type with what type the value actually is
