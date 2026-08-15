@@ -18,40 +18,168 @@ bool ValidateToken(ASTNode** currentASTNode, char token){
 };
 
 void AddNumericCharactersToNode(ASTNode* parentNode, ASTNode** childNodes, int childCount){
-    ASTListNode* newNodeList = NULL;
+    ASTListNode* wholeNumberNumericNodes = NULL;
+    ASTListNode* decimalNumberNumericNodes = NULL;
+    ASTListNode* exponentNumberNumericNodes = NULL;
 
     ASTNode* decimalPoint = CreateASTNode(NUMBER_DATA, '.');
 
+    ASTNode* positiveWhole = CreateASTNode(NUMBER_DATA, '+');
+    ASTNode* negitiveWhole = CreateASTNode(NUMBER_DATA, '-');
+
+    ASTNode* positiveExp = CreateASTNode(NUMBER_DATA, '+');
+    ASTNode* negitiveExp = CreateASTNode(NUMBER_DATA, '-');
+
+    ASTNodeAddChild(parentNode, positiveWhole);
+    ASTNodeAddChild(parentNode, negitiveWhole);
+
+    ASTNode* exponente = CreateASTNode(NUMBER_DATA, 'e');
+    ASTNode* exponentE = CreateASTNode(NUMBER_DATA, 'E');
+
+    ASTNodeAddChild(exponente, positiveExp);
+    ASTNodeAddChild(exponente, negitiveExp);
+
+    ASTNodeAddChild(exponentE, positiveExp);
+    ASTNodeAddChild(exponentE, negitiveExp);
+
     //add numeric values
+    //whole
     for(int i = 0; i < 10; i++){ 
          ASTNode* node = CreateASTNode(NUMBER_DATA, '0'+i);
          ASTNodeAddChild(parentNode, node);
-
+        
+         // these are nodes that can follow numeric nodes
          for(int j = 0; j < childCount; j++)
             ASTNodeAddChild(node, childNodes[j]);
 
         ASTListNode* listNode = CreateASTListNode(node);
-        ASTListAppendNode(&newNodeList, listNode);
+        ASTListAppendNode(&wholeNumberNumericNodes, listNode);
+    }
+
+    //decimal
+    for(int i = 0; i < 10; i++){ 
+        ASTNode* node = CreateASTNode(NUMBER_DATA, '0'+i);
+
+        for(int j = 0; j < childCount; j++)
+            ASTNodeAddChild(node, childNodes[j]);
+
+        ASTListNode* listNode = CreateASTListNode(node);
+        ASTListAppendNode(&decimalNumberNumericNodes, listNode);
+    }
+
+    //exponent
+    for(int i = 0; i < 10; i++){ 
+        ASTNode* node = CreateASTNode(NUMBER_DATA, '0'+i);
+
+        for(int j = 0; j < childCount; j++)
+            ASTNodeAddChild(node, childNodes[j]);
+
+        ASTListNode* listNode = CreateASTListNode(node);
+        ASTListAppendNode(&exponentNumberNumericNodes, listNode);
     }
     
     //attach nodes to eachother
-    int length = parentNode->ChildCount;
-    ASTListNode* currentNode = newNodeList;
-    while(currentNode != NULL){
-        for(int i = 0; i < length; i++){ 
-            ASTNodeAddChild(currentNode->node, parentNode->Children[i]);
+    //whole (each node can be the start of the number, therefor it is added to the parent node)
+    ASTListNode* currentNode = wholeNumberNumericNodes;
+    while(currentNode != NULL){ 
+        ASTListNode* currentNodeInner = wholeNumberNumericNodes;
+        while(currentNodeInner != NULL){
+            ASTNodeAddChild(currentNode->node, currentNodeInner->node);
+            currentNodeInner = currentNodeInner->next; 
         }
 
         currentNode = currentNode->next;
     }
 
-    //add decimal node to number nodes
-    for(int i = 0; i < length; i++){
-        ASTNodeAddChild(parentNode->Children[i], decimalPoint);
-        ASTNodeAddChild(decimalPoint, parentNode->Children[i]);
+    //decimal 
+    currentNode = decimalNumberNumericNodes;
+    while(currentNode != NULL){
+        ASTListNode* currentNodeInner = decimalNumberNumericNodes;
+        while(currentNodeInner != NULL){
+            ASTNodeAddChild(currentNode->node, currentNodeInner->node);
+            currentNodeInner = currentNodeInner->next; 
+        }
+
+        currentNode = currentNode->next;
     }
-        
-    DeleteASTList(&newNodeList); 
+
+    //exponent
+    currentNode = exponentNumberNumericNodes;
+    while(currentNode != NULL){
+        ASTListNode* currentNodeInner = exponentNumberNumericNodes;
+        while(currentNodeInner != NULL){
+            ASTNodeAddChild(currentNode->node, currentNodeInner->node);
+            currentNodeInner = currentNodeInner->next; 
+        }
+
+        currentNode = currentNode->next;
+    }
+   
+    //Add positive and negitive to whole numbers
+    currentNode = wholeNumberNumericNodes;
+    while(currentNode){
+        ASTNodeAddChild(negitiveWhole, currentNode->node);
+        ASTNodeAddChild(positiveWhole, currentNode->node);
+        currentNode = currentNode->next;
+    }
+
+    //Add positive and negitive to whole numbers
+    currentNode = exponentNumberNumericNodes;
+    while(currentNode){
+        ASTNodeAddChild(negitiveExp, currentNode->node);
+        ASTNodeAddChild(positiveExp, currentNode->node);
+        currentNode = currentNode->next;
+    }
+
+    //add decimal node after whole nodes
+    currentNode = wholeNumberNumericNodes;
+    while(currentNode != NULL){ 
+        ASTNodeAddChild(currentNode->node, decimalPoint);
+        currentNode = currentNode->next;
+    }
+
+    //add exponent nodes after whole nodes
+    currentNode = wholeNumberNumericNodes;
+    while(currentNode != NULL){ 
+        ASTNodeAddChild(currentNode->node, exponente);
+        ASTNodeAddChild(currentNode->node, exponentE);
+        currentNode = currentNode->next;
+    }
+
+    //add exponent nodes after decimal nodes
+    currentNode = decimalNumberNumericNodes;
+    while(currentNode != NULL){ 
+        ASTNodeAddChild(currentNode->node, exponente);
+        ASTNodeAddChild(currentNode->node, exponentE);
+        currentNode = currentNode->next;
+    }
+    
+    //add decimal node before decimal nodes
+    currentNode = decimalNumberNumericNodes;
+    while(currentNode != NULL){
+        ASTNodeAddChild(decimalPoint, currentNode->node);
+        currentNode = currentNode->next;
+    }
+
+    //add E e node before exponent nodes
+    currentNode = exponentNumberNumericNodes;
+    while(currentNode != NULL){
+        ASTNodeAddChild(exponente, currentNode->node);
+        ASTNodeAddChild(exponentE, currentNode->node);
+        currentNode = currentNode->next;
+    }
+
+    //add negitive postitve before whole numbers
+    currentNode = wholeNumberNumericNodes;
+    while(currentNode){
+        ASTNodeAddChild(negitiveWhole, currentNode->node);
+        ASTNodeAddChild(positiveWhole, currentNode->node);
+        currentNode = currentNode->next;
+    }
+
+    DeleteASTList(&exponentNumberNumericNodes);
+    DeleteASTList(&decimalNumberNumericNodes);
+    DeleteASTList(&wholeNumberNumericNodes);  
 }
 
 void AddAsciiToNode(ASTNode* parentNode, ASTNode** childNodes, int childCount){
