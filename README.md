@@ -1,7 +1,7 @@
 # JSON For C
 
 JSON For C is a very __simple__ JSON parser for the C Programming Language. Parse 
-the file, get what you need, and get out.
+the string, get what you need, and get out.
 
 __This Library is NOT for writting or serializing JSON files.__
 Just reading!
@@ -17,6 +17,14 @@ mkdir build && cd build
 cmake ..
 make
 ```
+
+or using cmake:
+```
+add_subdirectory("${CMAKE_SOURCE_DIR}/PATH_TO_JSON_FOR_C_DIR")
+...
+target_link_libraries(${NAME} PRIVATE jsonlib)
+```
+
 The most basic example to link against this library is as follows, where the
 project is being built within the build directory generated.
 
@@ -64,13 +72,18 @@ To show off the API, the following, `example.json` will be used:
     ]
 }   
 ```
-After initialization, parsing can begin. To parse a file, call `JParse(file name)`
+After initialization, parsing can begin. To parse a file, call `JParseFile(file name)`
 
 ```example.c
-Json* root = JParse("example.json");
+Json* root = JParseFile("example.json");
 ```
 
-`JParse` will return a JSON object to be interpreted. This JSON object represents the 
+Or a string, call `JParseString(const char* string)`
+```example.c
+Json* root = JParseString("...");
+```
+
+`JParse*` will return a JSON object to be interpreted. This JSON object represents the 
 root of the file.
 
 If the object returned is NULL, then an error occured while parsing. The Error
@@ -82,17 +95,17 @@ To free the resulting JSON Object when its no longer needed, call `JDelete(Json*
 JDelete(&root);
 ```
 
-__REMEMBER: Delete The Root JSON Object! The Root Object Is The One Returned By JParse()!__
+__REMEMBER: Delete The Root JSON Object, Or you will leak memory!__
 
 ### Getting Key Value Pairs
 To grab a value from a JSON object, `JGetValue(JSON object, key, value)` is called.
 
 ```example.c
-JsonValue* value = NULL;
-JGetValue(root, "Hello", &JsonValue);
+JsonValue hello;
+JGetValue(root, "Hello", &hello);
 
-if(value)
-    printf("Output: %s\n", value->string);
+if(hello.hasValue)
+    printf("Output: %s\n", hello.value->string);
 ```
 
 The result: 
@@ -102,23 +115,26 @@ Output: World
 ```
 
 After calling `JGetValue`, If the key is found and the pair is a simple value, the value
-will be stored in `JsonValue* value`. `JsonValue->string` is the text, number, or bool value 
+will be stored in `JsonValue hello`. `hello.value->string` is the text, number, or bool value 
 found at the key.
 
-If the key is not found, the value stays `NULL`.
+If the key is not found, `hello.hasValue` is false.
+
+`JsonValue` objects have flags that can be used to determine its value's type
+(ie. `.isString`, `.isInt`, `.isFloat`, `.isNull`, `.isBool`).
 
 ### Getting Nested Objects
 
 `JGetValue` will return the nested JSON object if the key is paired with one.
 
 ```example.c
-JsonValue* value = NULL;
-Json* nested = JGetValue(root, "Nested-Object", value);
+JsonValue value;
+Json* nested = JGetValue(root, "Nested-Object", &value);
 
 if(nested){
     JGetValue(nested, "Two", value);
-    if(value)
-        printf("Output: %s\n", value->string);
+    if(value.hasValue)
+        printf("Output: %s\n", value.value->string);
 }
 ```
 
@@ -132,20 +148,21 @@ Output: 2
 `JGetValue` Can also be used to get array values. The Key is the array index.
 
 ```example.c
-JsonValue* value = NULL;
-Json* array = JGetValue(root, "Array", &value)
+JsonValue element;
+Json* array = JGetValue(root, "Array", &element)
 
-JGetValue(root, "0", value);
-if(value)
-    printf("Output 0: %s\n", value->string);
+JGetValue(array, "0", &element);
 
-JGetValue(root, "1", value);
-if(value)
-    printf("Output 1: %s\n", value->string);
+if(element.hasValue)
+    printf("Output 0: %s\n", element.value->string);
 
-JGetValue(root, "2", value);
-if(value)
-    printf("Output 2: %s\n", value->string);
+JGetValue(root, "1", &element);
+if(element.hasValue)
+    printf("Output 1: %s\n", element.value->string);
+
+JGetValue(root, "2", &element);
+if(element.hasValue)
+    printf("Output 2: %s\n", element.value->string);
 ```
 
 The result:
@@ -166,9 +183,9 @@ for(int i = 0; i < children; i++){
     char buffer[20];
     sprintf(buffer, "%s", i);
 
-    JGetValue(array, buffer, &value);
-    if(value)
-        printf("Value at %d is %s\n", i, value->string);
+    JGetValue(array, buffer, &element);
+    if(element.hasValue)
+        printf("Value at %d is %s\n", i, element.value->string);
 }
 ```
 

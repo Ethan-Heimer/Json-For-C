@@ -93,6 +93,7 @@ void JInit(){
     ASTNode* NumericDataChildrenNodes[] = {Camma, CloseBracket};
     AddNumericCharactersToNode(Colon, NumericDataChildrenNodes, 2);
     AddBooleanValues(Colon, NumericDataChildrenNodes, 2);
+    AddNullValues(Colon, NumericDataChildrenNodes, 2);
 
     //Camma
     ASTNodeAddChild(Camma, OpenQuoteKey);
@@ -162,7 +163,24 @@ void JInit(){
     AddBooleanValues(ArrayDataCamma, NumericArrayChildrenNodes, 2);
 }
 
-Json* JParse(const char* filePath){
+Json* JParseString(const char* string){
+    Json* tree = NULL; 
+    String* str = CreateNormStringWith(string);
+    
+    //normalize string
+    Queue* queue = CreateQueue();
+    bool succsess = JFileTokenize(str, queue);
+
+    if(succsess)
+        tree = JCreateTree(queue);
+
+    FreeQueue(&queue);
+    DeleteString(&str);
+
+    return tree; 
+}
+
+Json* JParseFile(const char* filePath){
     Json* tree = NULL;
     String* normalizedFile = GetNormalizedFile(filePath);
 
@@ -184,9 +202,10 @@ bool JFileTokenize(String* normalizedFile, Queue* tokenQueue){
     unsigned int index = 0;     
     unsigned int scope = 0;
 
+    // memory leak
     String* currentTokenData = CreateString();
     TokenizeType tokenizeState = PUSH;
-    
+  
     while(true){
         char c = GetCharacter(normalizedFile, index);
         if(c == '\0')
@@ -196,10 +215,11 @@ bool JFileTokenize(String* normalizedFile, Queue* tokenQueue){
         if(!validToken){
             printf("\nSyntax Error, Unexped Token %c at %d after %c. \n",
                 c, index+1, currentSyntaxNode->AsciiValue);
-
+            
+            DeleteString(&currentTokenData);
             return false;
         } else { 
-            Tokenize(currentSyntaxNode, c, currentTokenData, tokenQueue, &tokenizeState);
+            Tokenize(currentSyntaxNode, c, currentTokenData, tokenQueue, &tokenizeState, false);
         }
 
         UpdateScope(currentSyntaxNode, &scope);
@@ -208,9 +228,13 @@ bool JFileTokenize(String* normalizedFile, Queue* tokenQueue){
 
     if(scope != 0){
         perror("Syntax Error, Expected End of Data Not Found... Missing } or }?\n");
+        printf("Scope: %d\n", scope);
+
+        DeleteString(&currentTokenData);
         return false;
     }
-
+    
+    DeleteString(&currentTokenData);
     return true;
 }
 
@@ -225,10 +249,7 @@ Json* JCreateTree(Queue* tokenQueue){
 
     while(!IsQueueEmpty(tokenQueue)){
         Token* token = Pop(tokenQueue);
-        TokenType tokenType = token->tokenType;
-
         JTreeBuildState treeState = GetTreeState(token);
-        Json* newNode = NULL;
 
         switch(treeState){
             case SCOPE_IN:  
@@ -265,7 +286,7 @@ void JDelete(Json** json){
     DeleteJson(json);
 }
 
-Json* JGetValue(Json* root, const char* key, JsonValue** value){
+Json* JGetValue(Json* root, const char* key, JsonValue* value){
     if(root == NULL){
         return NULL;
     }
@@ -277,13 +298,46 @@ Json* JGetValue(Json* root, const char* key, JsonValue** value){
 
         if(SameStringValue(child->key, key)){
             if(child->data == NULL){
-                if(value)
-                    *value = NULL;
+                if(value){
+                    value->value = NULL;
+                    value->isNull = false;
+                    value->isBool = false;
+                    value->isString = false;
+                    value->isFloat = false;
+                    value->isInt = false;
+                    value->hasValue = false;
+                }
                 return child;
             }
             else{
                 if(value){
-                    *value = child->data; 
+                    value->hasValue = true;
+                    value->isString = true;
+
+                    value->value = child->data; 
+
+                    switch (child->valueType) {
+                        case INT_VALUE:
+                            value->isInt = true;
+                            value->isFloat = true;
+                            break;
+
+                        case FLOAT_VALUE:
+                            value->isFloat = true;
+                            break;
+
+                        case NULL_VALUE:
+                            value->isNull = true;
+                            break;
+
+                        case BOOL_VALUE:
+                            value->isBool = true;
+                            break;
+
+                        default:
+                            break;
+                    }
+                     
                     return NULL;
                 }
             }

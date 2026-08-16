@@ -5,11 +5,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-Token* CreateToken(const char* data, TokenType tokenType){
+Token* CreateToken(const char* data, TokenType tokenType, TokenValueType valueType){
     Token* token = (Token*)malloc(sizeof(Token));
 
     token->data = CreateString();
     token->tokenType = tokenType;
+    token->valueType = valueType;
 
     AppendString(token->data, data);
 

@@ -9,6 +9,8 @@ typedef struct String{
 } String;
 
 String* CreateString();
+String* CreateStringWith(const char* string);
+String* CreateNormStringWith(const char* string);
 
 void AppendString(String*, const char* appendix);
 void AppendChar(String*, char);

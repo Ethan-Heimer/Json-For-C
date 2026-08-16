@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 
 String* CreateString(){
     String* str = (String*)malloc(sizeof(String));
@@ -21,6 +22,70 @@ String* CreateString(){
     str->length = 1;
 
     return str;
+}
+
+String* CreateStringWith(const char* string){
+    String* str = (String*)malloc(sizeof(String));
+    if(str == NULL)
+        return NULL;
+   
+    int length = strlen(string) + 1;
+    char* buffer = (char*)calloc(length, sizeof(char));
+    if(buffer == NULL){
+        free(str);
+        return NULL;
+    }
+
+    memcpy(buffer, string, length);
+
+    str->string = buffer;
+    str->length = length;
+
+    return str; 
+}
+
+String* CreateNormStringWith(const char* string){
+    String* str = (String*)malloc(sizeof(String));
+    if(str == NULL)
+        return NULL;
+   
+    //remove white space
+    bool skipSpace = false;
+    int paramLength = strlen(string) + 1;
+    char* normBuffer = (char*)calloc(paramLength, sizeof(char));
+    if(normBuffer == NULL){
+        free(str);
+        return NULL;
+    }
+  
+    char c;
+    int normIndex = 0; 
+    for(int i = 0; i < paramLength-1; i++){
+        c = string[i];
+        if(c == '"')
+            skipSpace = !skipSpace;
+
+        if(!isspace(c) || skipSpace){
+            normBuffer[normIndex] = c;
+            normIndex++; 
+        }
+    }
+
+    normBuffer[normIndex] = '\0';
+    int newLength = normIndex + 1;
+
+    char* tempBuf = realloc(normBuffer, sizeof(char) * newLength);
+    if(tempBuf == NULL){
+        free(normBuffer);
+        return NULL;
+    } else {
+        normBuffer = tempBuf;
+    }
+
+    str->string = normBuffer;
+    str->length = newLength;
+
+    return str; 
 }
 
 void AppendString(String* string, const char* appendix){

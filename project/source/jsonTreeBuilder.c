@@ -49,12 +49,9 @@ void ScopeJTreeIn(Token* token, Json** currentNode, JsonStack* scopeStack, JsonT
     JStackPush(scopeStack, *currentNode, *treeType, *arrayIndex);    
     UpdateTreeType(token, treeType, arrayIndex);
 
-    JsonType type;
+    JsonType type = OBJECT;
     if(token->tokenType == OPEN_ARRAY){
         type = ARRAY;
-    }
-    else if(token->tokenType == OPEN_OBJECT){
-        type = OBJECT;
     }
     (*currentNode)->type = type;
 
@@ -82,20 +79,21 @@ void AddChildNode(JsonType type, JsonStack* stack, Json** currentNode, JsonTreeT
 void FillJsonData(const Token* token, Json* currentNode, JsonTreeType treeType){
     if(treeType == T_OBJECT){
         if(currentNode->key == NULL){
-            FillJsonField(token, &currentNode->key);
+            FillJsonField(token, &currentNode->valueType, &currentNode->key);
         } else { 
-            FillJsonField(token, &currentNode->data);
+            FillJsonField(token, &currentNode->valueType, &currentNode->data);
         }
     }
     else if(treeType == T_ARRAY){
-        FillJsonField(token, &currentNode->data);
+        FillJsonField(token, &currentNode->valueType, &currentNode->data);
     }
 }
 
-void FillJsonField(const Token* token, String** field){
+void FillJsonField(const Token* token, TokenValueType* valueTypeField, String** field){
     String* value = CreateString();
     CopyString(value, token->data);
 
     *field = value;
+    *valueTypeField = token->valueType;
 }
 
