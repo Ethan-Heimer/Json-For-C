@@ -1,3 +1,26 @@
+# Update:
+
+JSON is not a regular language. Why is this important? Well when I developed
+this library, I missidentified the AST as a tool for parsing. The parser's job
+is to take surface syntax and turn it into a tree like representitation (The AST)
+for further verification. What I had done instead is used a Finite Automata (What
+I had called the AST in the source), to attempt to parse a non-regular language.
+
+Why is JSON not regular? It can be inifinitly nested, meaning a machine (parser)
+that accepts JSON must have memory to either count or recurse. A simple state machine
+(Finite Automata) does not have memory. This is why learning about Programming
+Languages and Automata Theory is important!
+
+Anyway, as engineers we all make mistakes and we grow. This json library is able
+to parse json of a specific depth before the parser throws false flags. I ran into
+this while developing One Crooked Editor and testing out LSPs.
+
+In the near future, I plan on developing a simple constexpr enabled RegExp engine
+and JSON lib for C++ for my text editor. I will provide links to the repos here
+when I can.
+
+Thank you for checking out my repo! - Ethan :)
+
 # JSON For C
 
 JSON For C is a very __simple__ JSON parser for the C Programming Language. Parse 
